@@ -1,55 +1,87 @@
 <div class="dialog-content">
-  <h5 mat-dialog-title *ngIf="!data.uuid">Add Appointment</h5>
-  <h5 mat-dialog-title *ngIf="data.uuid">Edit Appointment</h5>
-  <div [formGroup]="appointmentForm">
+  <h5 mat-dialog-title>
+    {{ data.uuid ? 'Edit Appointment' : 'Add Appointment' }}
+  </h5>
+
+  <form [formGroup]="appointmentForm">
     <div mat-dialog-content>
-      <mat-form-field class="form-field">
+      <!-- Title Field -->
+      <mat-form-field class="form-field" appearance="outline">
         <mat-label>Title</mat-label>
         <input formControlName="title" matInput />
+        <mat-error *ngIf="appointmentForm.get('title')?.hasError('required')">
+          Title is required.
+        </mat-error>
       </mat-form-field>
-      <mat-form-field class="form-field">
+
+      <!-- Date Field -->
+      <mat-form-field class="form-field" appearance="outline">
         <mat-label>Date</mat-label>
         <input matInput [matDatepicker]="picker" formControlName="date" />
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
+        <mat-error *ngIf="appointmentForm.get('date')?.hasError('required')">
+          Date is required.
+        </mat-error>
       </mat-form-field>
-      <mat-form-field class="form-field">
+
+      <!-- Start Time -->
+      <mat-form-field class="form-field" appearance="outline">
         <mat-label>Start Time</mat-label>
         <input matInput formControlName="startTime" type="time" />
+        <mat-error *ngIf="appointmentForm.get('startTime')?.hasError('required')">
+          Start time is required.
+        </mat-error>
       </mat-form-field>
-      <mat-form-field class="form-field">
+
+      <!-- End Time -->
+      <mat-form-field class="form-field" appearance="outline">
         <mat-label>End Time</mat-label>
         <input matInput formControlName="endTime" type="time" />
+        <mat-error *ngIf="appointmentForm.get('endTime')?.hasError('required')">
+          End time is required.
+        </mat-error>
       </mat-form-field>
-      <div
-        *ngIf="
-          appointmentForm.errors && appointmentForm.errors['timeRangeInvalid']
-        "
-        class="error"
-      >
-        End time must be after start time.
+
+      <!-- Time Range Validation Error -->
+      <div *ngIf="appointmentForm.errors?.['timeRangeInvalid']" class="error">
+        End time must be after the start time.
       </div>
     </div>
+
     <div mat-dialog-actions align="end">
-      <button type="submit" mat-flat-button (click)="onSaveClick()">
+      <!-- Save Button -->
+      <button
+        type="button"
+        mat-flat-button
+        color="primary"
+        (click)="onSaveClick()"
+        [disabled]="!appointmentForm.valid"
+      >
         <span *ngIf="data.uuid">Edit Appointment</span>
         <span *ngIf="!data.uuid">Add Appointment</span>
       </button>
+
+      <!-- Delete Button -->
       <button
+        type="button"
+        mat-stroked-button
+        color="warn"
         (click)="onDeleteClick()"
         *ngIf="data.uuid"
-        style="margin-left: 10px"
-        mat-stroked-button
       >
         Delete
       </button>
+
+      <!-- Cancel Button -->
       <button
-        style="margin-left: 10px"
+        type="button"
         mat-stroked-button
         (click)="onNoClick()"
+        style="margin-left: 10px"
       >
         Cancel
       </button>
     </div>
-  </div>
+  </form>
 </div>

@@ -1,9 +1,14 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 
 import { MatDialog } from '@angular/material/dialog';
-import { CdkDragDrop } from '@angular/cdk/drag-drop';
+import {CdkDrag, CdkDragDrop, CdkDragHandle, CdkDropList, CdkDropListGroup} from '@angular/cdk/drag-drop';
 import { AppointmentDialogComponent } from '../appointment-dialog/appointment-dialog.component';
 import {Appointment} from "../modele/Appointment.model";
+import {AppointmentService} from "../service/appointment.service";
+import {MatButtonToggle, MatButtonToggleGroup} from "@angular/material/button-toggle";
+import {DatePipe, NgForOf, NgIf, NgStyle} from "@angular/common";
+import {MatIcon} from "@angular/material/icon";
+import {MatButton, MatIconButton} from "@angular/material/button";
 
 
 
@@ -14,194 +19,33 @@ export enum CalendarView {
 }
 
 @Component({
+  standalone: true,
   selector: 'app-calendar',
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.scss'],
+  imports: [
+    CdkDropList,
+    MatButtonToggle,
+    DatePipe,
+    MatButtonToggleGroup,
+    NgStyle,
+    MatIcon,
+    CdkDrag,
+    CdkDragHandle,
+    CdkDropListGroup,
+    MatButton,
+    MatIconButton,
+    NgForOf,
+    NgIf
+  ]
 })
-export class CalendarComponent {
+export class CalendarComponent implements OnInit{
   viewDate: Date = new Date();
   selectedDate: Date | null = null;
   selectedStartTime: string | undefined;
   weekDays: string[] = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   monthDays: Date[] = [];
-  appointments: Appointment[] = [
-    {
-      uuid: '00000000-0000-0000-0000-000000000001',
-      date: new Date(
-        new Date().getFullYear(),
-        new Date().getMonth(),
-        new Date().getDate()
-      ),
-      title: 'Meeting with Bob',
-      startTime: '09:00',
-      endTime: '10:00',
-    },
-    {
-      uuid: '00000000-0000-0000-0000-000000000002',
-      date: new Date(new Date().getFullYear(), new Date().getMonth(), 2),
-      title: 'Lunch with Alice',
-      startTime: '12:00',
-      endTime: '13:00',
-    },
-    {
-      uuid: '00000000-0000-0000-0000-000000000003',
-      date: new Date(new Date().getFullYear(), new Date().getMonth(), 3),
-      title: 'Project Deadline',
-      startTime: '15:00',
-      endTime: '16:00',
-    },
-    {
-      uuid: '00000000-0000-0000-0000-000000000004',
-      date: new Date(
-        new Date().getFullYear(),
-        new Date().getMonth(),
-        new Date().getDate()
-      ),
-      title: 'Doctor Appointment',
-      startTime: '10:00',
-      endTime: '11:00',
-    },
-    {
-      uuid: '00000000-0000-0000-0000-000000000005',
-      date: new Date(
-        new Date().getFullYear(),
-        new Date().getMonth(),
-        new Date().getDate() + 1
-      ),
-      title: 'Team Meeting',
-      startTime: '14:00',
-      endTime: '15:00',
-    },
-    {
-      uuid: '00000000-0000-0000-0000-000000000006',
-      date: new Date(
-        new Date().getFullYear(),
-        new Date().getMonth(),
-        new Date().getDate()
-      ),
-      title: 'Coffee with Mike',
-      startTime: '11:00',
-      endTime: '12:00',
-    },
-    {
-      uuid: '00000000-0000-0000-0000-000000000007',
-      date: new Date(
-        new Date().getFullYear(),
-        new Date().getMonth(),
-        new Date().getDate() + 4
-      ),
-      title: 'Client Call',
-      startTime: '09:30',
-      endTime: '10:30',
-    },
-    {
-      uuid: '00000000-0000-0000-0000-000000000008',
-      date: new Date(new Date().getFullYear(), new Date().getMonth(), 8),
-      title: 'Gym',
-      startTime: '17:00',
-      endTime: '18:00',
-    },
-    {
-      uuid: '00000000-0000-0000-0000-000000000009',
-      date: new Date(
-        new Date().getFullYear(),
-        new Date().getMonth(),
-        new Date().getDate() - 1
-      ),
-      title: 'Dentist Appointment',
-      startTime: '11:30',
-      endTime: '12:30',
-    },
-    {
-      uuid: '00000000-0000-0000-0000-00000000000a',
-      date: new Date(
-        new Date().getFullYear(),
-        new Date().getMonth(),
-        new Date().getDate() - 2
-      ),
-      title: 'Birthday Party',
-      startTime: '19:00',
-      endTime: '21:00',
-    },
-    {
-      uuid: '00000000-0000-0000-0000-00000000000b',
-      date: new Date(new Date().getFullYear(), new Date().getMonth(), 11),
-      title: 'Conference',
-      startTime: '13:00',
-      endTime: '14:00',
-    },
-    {
-      uuid: '00000000-0000-0000-0000-00000000000c',
-      date: new Date(new Date().getFullYear(), new Date().getMonth(), 12),
-      title: 'Workshop',
-      startTime: '10:00',
-      endTime: '12:00',
-    },
-    {
-      uuid: '00000000-0000-0000-0000-00000000000d',
-      date: new Date(new Date().getFullYear(), new Date().getMonth(), 13),
-      title: 'Brunch with Sarah',
-      startTime: '11:00',
-      endTime: '12:00',
-    },
-    {
-      uuid: '00000000-0000-0000-0000-00000000000e',
-      date: new Date(
-        new Date().getFullYear(),
-        new Date().getMonth(),
-        new Date().getDate() + 2
-      ),
-      title: 'Networking Event',
-      startTime: '18:00',
-      endTime: '20:00',
-    },
-    {
-      uuid: '00000000-0000-0000-0000-00000000000f',
-      date: new Date(new Date().getFullYear(), new Date().getMonth(), 16),
-      title: 'Yoga Class',
-      startTime: '07:00',
-      endTime: '08:00',
-    },
-    {
-      uuid: '00000000-0000-0000-0000-000000000010',
-      date: new Date(new Date().getFullYear(), new Date().getMonth(), 16),
-      title: 'Strategy Meeting',
-      startTime: '10:00',
-      endTime: '11:30',
-    },
-    {
-      uuid: '00000000-0000-0000-0000-000000000011',
-      date: new Date(new Date().getFullYear(), new Date().getMonth(), 17),
-      title: 'Call with Investor',
-      startTime: '14:00',
-      endTime: '15:00',
-    },
-    {
-      uuid: '00000000-0000-0000-0000-000000000012',
-      date: new Date(new Date().getFullYear(), new Date().getMonth(), 18),
-      title: 'Team Lunch',
-      startTime: '12:00',
-      endTime: '13:00',
-    },
-    {
-      uuid: '00000000-0000-0000-0000-000000000013',
-      date: new Date(
-        new Date().getFullYear(),
-        new Date().getMonth(),
-        new Date().getDate() + 3
-      ),
-      title: 'HR Meeting',
-      startTime: '16:00',
-      endTime: '17:00',
-    },
-    {
-      uuid: '00000000-0000-0000-0000-000000000014',
-      date: new Date(new Date().getFullYear(), new Date().getMonth(), 20),
-      title: 'Board Meeting',
-      startTime: '11:00',
-      endTime: '12:00',
-    },
-  ];
+  appointments: Appointment[]=[];
   currentView: CalendarView = CalendarView.Month;
   timeSlots: string[] = [];
 
@@ -209,20 +53,24 @@ export class CalendarComponent {
 
   public CalendarView = CalendarView;
 
-  constructor(public dialog: MatDialog) {
-    this.appointments.forEach((appointment) => {
-      appointment.color = this.getRandomColor();
-    });
-    this.generateView(this.currentView, this.viewDate);
+  constructor(public dialog: MatDialog,private appointmentService:AppointmentService) {
     this.generateTimeSlots();
+  }
+  ngOnInit(): void {
+    this.loadAppointments(); // Charger les rendez-vous lors de l'initialisation
+  }
+  loadAppointments(): void {
+    this.appointmentService.getAppointments().subscribe((appointments) => {
+      this.appointments = appointments.map(appointment => new Appointment(appointment.title, new Date(appointment.date), appointment.startTime, appointment.endTime, appointment.uuid));
+      this.generateView(this.currentView, this.viewDate);
+    });
   }
 
   generateView(view: CalendarView, date: Date) {
     switch (view) {
       case CalendarView.Month:
         this.generateMonthView(date);
-        break;
-      case CalendarView.Week:
+        break;      case CalendarView.Week:
         this.generateWeekView(date);
         break;
       case CalendarView.Day:
@@ -367,6 +215,10 @@ export class CalendarComponent {
   }
 
   isSameDate(date1: Date, date2: Date): boolean {
+    if (!(date1 instanceof Date) || !(date2 instanceof Date)) {
+      console.error('Invalid date comparison:', date1, date2);
+      return false; // ou gérer l'erreur comme vous le souhaitez
+    }
     return (
       date1.getDate() === date2.getDate() &&
       date1.getMonth() === date2.getMonth() &&
@@ -409,28 +261,23 @@ export class CalendarComponent {
     );
   }
 
-  addAppointment(
-    date: Date,
-    title: string,
-    startTime: string,
-    endTime: string
-  ) {
-    this.appointments.push({
-      uuid: this.generateUUID(),
-      date,
-      title,
-      startTime,
-      endTime,
-      color: this.getRandomColor(),
+  addAppointment(date: Date, title: string, startTime: string, endTime: string) {
+    const newAppointment = new Appointment(title, date, startTime, endTime);
+
+    this.appointmentService.addAppointment(newAppointment).subscribe((appointment) => {
+      this.appointments.push(appointment);
     });
+    this.loadAppointments();
   }
 
   deleteAppointment(appointment: Appointment, event: Event) {
     event.stopPropagation();
-    const index = this.appointments.indexOf(appointment);
-    if (index > -1) {
-      this.appointments.splice(index, 1);
-    }
+    this.appointmentService.deleteAppointment(appointment.uuid!).subscribe(() => {
+      const index = this.appointments.indexOf(appointment);
+      if (index > -1) {
+        this.appointments.splice(index, 1);
+      }
+    });
   }
 
   openDialog(): void {
@@ -523,15 +370,17 @@ export class CalendarComponent {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        const index = this.appointments.findIndex(
-          (appointment) => appointment.uuid === result.uuid
-        );
-        if (result.remove) {
-          this.appointments.splice(index, 1);
-        } else {
-          this.appointments[index] = result;
-        }
+        this.appointmentService.updateAppointment(result.uuid!, result).subscribe(() => {
+          const index = this.appointments.findIndex((a) => a.uuid === result.uuid);
+          if (result.remove) {
+            this.appointments.splice(index, 1);
+          } else {
+            this.appointments[index] = result;
+          }
+        });
       }
     });
   }
+
+
 }

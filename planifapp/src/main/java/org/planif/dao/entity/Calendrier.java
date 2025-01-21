@@ -17,8 +17,9 @@ public class Calendrier {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    /*
     @OneToMany(mappedBy = "calendrier", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Appointment> appointments;
     @OneToMany(mappedBy = "calendrier", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Utilisateur> utilisateurs;
+    private List<Utilisateur> utilisateurs; */
    }

@@ -1,11 +1,15 @@
 import { Component, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {
+  MatDialogRef,
+  MAT_DIALOG_DATA,
+  MatDialogContent,
+  MatDialogTitle,
+  MatDialogActions
+} from '@angular/material/dialog';
 import {
   AbstractControl,
   FormBuilder,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
+  FormGroup, FormsModule, ReactiveFormsModule,
   ValidationErrors,
   ValidatorFn,
   Validators,
@@ -16,6 +20,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { CommonModule } from '@angular/common';
 
+export interface AppointmentData {
+  uuid?: string;
+  title: string;
+  date: Date;
+  startTime: string;
+  endTime: string;
+}
 @Component({
   selector: 'app-appointment-dialog',
   templateUrl: './appointment-dialog.component.html',
@@ -29,76 +40,62 @@ import { CommonModule } from '@angular/common';
     MatButtonModule,
     MatDatepickerModule,
     ReactiveFormsModule,
+    MatDialogContent,
+    MatDialogTitle,
+    MatDialogActions,
   ],
 })
+
+
+
 export class AppointmentDialogComponent {
   appointmentForm: FormGroup;
+
   constructor(
     public dialogRef: MatDialogRef<AppointmentDialogComponent>,
-    @Inject(MAT_DIALOG_DATA)
-    public data: {
-      uuid: string;
-      date: Date;
-      title: string;
-      startTime: string;
-      endTime: string;
-      color: string;
-    },
+    @Inject(MAT_DIALOG_DATA) public data: AppointmentData,
     private formBuilder: FormBuilder
   ) {
-    this.appointmentForm = this.formBuilder.group(
-      {
-        title: [this.data.title || '', Validators.required],
-        date: [this.data.date, Validators.required],
-        startTime: [this.data.startTime || '', Validators.required],
-        endTime: [this.data.startTime || '', Validators.required],
-      },
-      { validators: this.timeRangeValidator }
-    );
+    // Initialisation du formulaire avec des valeurs par défaut
+    this.appointmentForm = this.formBuilder.group({
+      title: [this.data.title || '', Validators.required],
+      date: [this.data.date || '', Validators.required],
+      startTime: [this.data.startTime || '12:00', Validators.required],
+      endTime: [this.data.endTime || '13:00', Validators.required],
+    }, { validators: this.timeRangeValidator });
   }
 
+  // Annuler et fermer le dialog
   onNoClick(): void {
     this.dialogRef.close();
   }
 
+  // Sauvegarder et retourner les données du formulaire
   onSaveClick(): void {
     if (this.appointmentForm.valid) {
-      const data = {
-        title: this.appointmentForm.controls['title'].value,
-        date: this.appointmentForm.controls['date'].value,
-        startTime: this.appointmentForm.controls['startTime'].value,
-        endTime: this.appointmentForm.controls['endTime'].value,
+      const updatedData = {
+        ...this.appointmentForm.value,
         uuid: this.data.uuid,
       };
-      this.dialogRef.close(data);
+      this.dialogRef.close(updatedData);
     }
   }
 
+  // Supprimer l'appoinement
   onDeleteClick(): void {
     this.dialogRef.close({ remove: true, uuid: this.data.uuid });
   }
 
-  timeRangeValidator: ValidatorFn = (
-    control: AbstractControl
-  ): ValidationErrors | null => {
-    const startTime = control.get('startTime')?.value;
-    const endTime = control.get('endTime')?.value;
-    if (startTime && endTime) {
-      const [startHours, startMinutes] = startTime.split(':');
-      const [endHours, endMinutes] = endTime.split(':');
+  // Validateur pour vérifier que l'heure de fin est après l'heure de début
+  timeRangeValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+    const group = control as FormGroup;
+    const startTime = group.get('startTime')?.value;
+    const endTime = group.get('endTime')?.value;
 
-      const startDate = new Date();
-      startDate.setHours(startHours);
-      startDate.setMinutes(startMinutes);
-
-      const endDate = new Date();
-      endDate.setHours(endHours);
-      endDate.setMinutes(endMinutes);
-
-      if (startDate > endDate) {
-        return { timeRangeInvalid: true };
-      }
+    if (startTime && endTime && startTime >= endTime) {
+      return { timeRangeInvalid: true };
     }
+
     return null;
   };
 }

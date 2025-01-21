@@ -19,7 +19,8 @@ public class Utilisateur {
     private String prenom;
     private String email;
     private String password;
+    /*
     @ManyToOne
     private Calendrier calendrier;
-
+    */
 }

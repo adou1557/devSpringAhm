@@ -17,10 +17,11 @@ public class Appointment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long uuid;
-    private String nom;
+    private String title;
     private Date date;
     private String startTime;
     private String endTime;
     private String color;
+
 
 }

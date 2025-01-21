@@ -9,8 +9,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+@RestController
+@RequestMapping("/api/evenementNotification")
+@CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 
-@Controller
 public class EvenementNotificationController {
     @Autowired
     EvenementNotificationService evenementNotificationService;

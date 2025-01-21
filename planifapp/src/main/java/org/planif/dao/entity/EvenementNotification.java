@@ -17,8 +17,9 @@ public class EvenementNotification {
     private Long id;
     private String typeNotification;
     private Date dateEnvoi;
+    /*
     @ManyToOne
     private Notification notification;
     @ManyToOne
-    private Appointment appointment;
+    private Appointment appointment;*/
 }

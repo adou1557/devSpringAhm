@@ -22,7 +22,8 @@ public class Notification {
     private String contenu;
     private String destinataire;
     private String timestamp;
+    /*
     @OneToMany(mappedBy = "notification", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<EvenementNotification> evenementNotifications;
-
+    */
 }
